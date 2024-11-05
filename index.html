@@ -196,6 +196,7 @@
       const statusDisplay = document.getElementById("status");
       const cells = document.querySelectorAll(".cell");
       const resetButton = document.getElementById("reset");
+      const board = document.getElementById("board");
 
       let gameState = ["", "", "", "", "", "", "", "", ""];
       let gameActive = true;
@@ -213,21 +214,49 @@
         [2, 4, 6], // Diagonals
       ];
 
-      // Handle cell click event
-      const handleCellClick = (clickedCellEvent) => {
+      // Animation utilities
+      const shake = (element) => {
+        element.style.animation = "none";
+        element.offsetHeight; // Trigger reflow
+        element.style.animation = "shake 0.5s cubic-bezier(.36,.07,.19,.97) both";
+      };
+
+      const fadeOut = (element, duration = 300) => {
+        element.style.opacity = "1";
+        element.style.transition = `opacity ${duration}ms ease`;
+        element.style.opacity = "0";
+        return new Promise(resolve => setTimeout(resolve, duration));
+      };
+
+      const fadeIn = (element, duration = 300) => {
+        element.style.opacity = "0";
+        element.style.transition = `opacity ${duration}ms ease`;
+        element.style.opacity = "1";
+        return new Promise(resolve => setTimeout(resolve, duration));
+      };
+
+      // Enhanced status updates with animations
+      const updateStatus = async (message) => {
+        await fadeOut(statusDisplay);
+        statusDisplay.textContent = message;
+        await fadeIn(statusDisplay);
+      };
+
+      // Handle cell click event with enhanced animations
+      const handleCellClick = async (clickedCellEvent) => {
         const clickedCell = clickedCellEvent.target;
         const clickedCellIndex = parseInt(clickedCell.getAttribute("data-cell-index"));
 
         // Check if the cell is already filled or game is not active
         if (gameState[clickedCellIndex] !== "" || !gameActive || currentPlayer !== "X") {
+          shake(clickedCell);
           return;
         }
 
-        // Update game state and UI
+        // Update game state and UI with animation
         gameState[clickedCellIndex] = "X";
         clickedCell.textContent = "X";
         clickedCell.classList.add("x");
-        clickedCell.style.animation = "pop 0.3s ease";
 
         // Check for win or draw
         if (checkWin("X")) {
@@ -239,21 +268,21 @@
           return;
         }
 
-        // Switch to AI's turn
+        // Switch to AI's turn with smooth transition
         currentPlayer = "O";
-        statusDisplay.textContent = "AI is thinking...";
+        await updateStatus("AI is thinking...");
         disableCells();
         setTimeout(makeAIMove, 500);
       };
 
-      // AI move using minimax algorithm
-      const makeAIMove = () => {
+      // AI move with enhanced animations
+      const makeAIMove = async () => {
         if (!gameActive) return;
 
         let bestScore = -Infinity;
         let bestMove;
 
-        // Find the best move
+        // Find the best move using minimax
         for (let i = 0; i < 9; i++) {
           if (gameState[i] === "") {
             gameState[i] = "O";
@@ -266,13 +295,19 @@
           }
         }
 
-        // Make the best move
+        // Animate AI's move
+        const targetCell = cells[bestMove];
         gameState[bestMove] = "O";
-        cells[bestMove].textContent = "O";
-        cells[bestMove].classList.add("o");
-        cells[bestMove].style.animation = "pop 0.3s ease";
+        
+        // Add a "thinking" indicator
+        targetCell.style.background = "rgba(78, 205, 196, 0.2)";
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        targetCell.textContent = "O";
+        targetCell.classList.add("o");
+        targetCell.style.background = "";
 
-        // Check for win or draw
+        // Check for win or draw with animations
         if (checkWin("O")) {
           endGame("O");
           return;
@@ -282,9 +317,9 @@
           return;
         }
 
-        // Switch back to player's turn
+        // Switch back to player's turn with smooth transition
         currentPlayer = "X";
-        statusDisplay.textContent = "Your turn (X)";
+        await updateStatus("Your turn (X)");
         enableCells();
       };
 
@@ -319,64 +354,95 @@
         }
       };
 
-      // Check for a win
+      // Enhanced win checking with sequential animation
       const checkWin = (player) => {
         return winningConditions.some((condition) => {
           return condition.every((index) => gameState[index] === player);
         });
       };
 
-      // Check for a draw
+      // Check for a draw with animation
       const checkDraw = () => !gameState.includes("");
 
-      // End the game
-      const endGame = (result) => {
+      // Enhanced game end with animations
+      const endGame = async (result) => {
         gameActive = false;
         if (result === "draw") {
-          statusDisplay.textContent = "It's a draw!";
+          await updateStatus("It's a draw!");
+          shake(board);
         } else {
-          const winningCells = winningConditions.find((condition) => condition.every((index) => gameState[index] === result));
-          highlightWinningCells(winningCells);
-          statusDisplay.textContent = result === "X" ? "You win!" : "AI wins!";
+          const winningCells = winningConditions.find((condition) => 
+            condition.every((index) => gameState[index] === result)
+          );
+          await highlightWinningCells(winningCells);
+          await updateStatus(result === "X" ? "You win!" : "AI wins!");
         }
         disableCells();
       };
 
-      // Highlight winning cells
-      const highlightWinningCells = (winningCells) => {
-        winningCells.forEach((index) => {
+      // Enhanced winning cells highlight with sequential animation
+      const highlightWinningCells = async (winningCells) => {
+        for (const index of winningCells) {
           cells[index].classList.add("winner");
-        });
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
       };
 
-      // Disable all cells
+      // Enhanced cell disable with fade effect
       const disableCells = () => {
         cells.forEach((cell) => {
-          cell.classList.add("disabled");
-        });
-      };
-
-      // Enable empty cells
-      const enableCells = () => {
-        cells.forEach((cell) => {
-          if (cell.textContent === "") {
-            cell.classList.remove("disabled");
+          if (!cell.classList.contains("winner")) {
+            cell.classList.add("disabled");
+            cell.style.opacity = "0.6";
           }
         });
       };
 
-      // Reset the game
-      const resetGame = () => {
+      // Enhanced cell enable with fade effect
+      const enableCells = () => {
+        cells.forEach((cell) => {
+          if (cell.textContent === "") {
+            cell.classList.remove("disabled");
+            cell.style.opacity = "1";
+          }
+        });
+      };
+
+      // Enhanced game reset with animations
+      const resetGame = async () => {
+        // Fade out the board
+        await fadeOut(board);
+        
+        // Reset game state
         gameState = ["", "", "", "", "", "", "", "", ""];
         gameActive = true;
         currentPlayer = "X";
-        statusDisplay.textContent = "Your turn (X)";
+        
+        // Clear cells with animation
         cells.forEach((cell) => {
           cell.textContent = "";
           cell.classList.remove("x", "o", "winner", "disabled");
+          cell.style.opacity = "1";
           cell.style.animation = "";
+          cell.style.background = "";
         });
+
+        // Fade the board back in
+        await fadeIn(board);
+        updateStatus("Your turn (X)");
       };
+
+      // Add shake animation to CSS
+      const style = document.createElement("style");
+      style.textContent = `
+        @keyframes shake {
+          10%, 90% { transform: translate3d(-1px, 0, 0); }
+          20%, 80% { transform: translate3d(2px, 0, 0); }
+          30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+          40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+      `;
+      document.head.appendChild(style);
 
       // Event listeners
       cells.forEach((cell) => cell.addEventListener("click", handleCellClick));

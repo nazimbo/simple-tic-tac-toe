@@ -23,17 +23,28 @@
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         backdrop-filter: blur(4px);
         border: 1px solid rgba(255, 255, 255, 0.18);
+        transform: translateY(0);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .game-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
       }
       h1 {
         margin-top: 0;
         font-size: 2.5em;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        background: linear-gradient(45deg, #fff, #f0f0f0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: titleGlow 2s ease-in-out infinite alternate;
       }
       .board {
         display: grid;
         grid-template-columns: repeat(3, 100px);
         grid-gap: 10px;
         margin: 20px 0;
+        perspective: 1000px;
       }
       .cell {
         width: 100px;
@@ -46,70 +57,118 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-style: preserve-3d;
+        position: relative;
       }
-      .cell:hover {
+      .cell:hover:not(.disabled) {
         background: rgba(255, 255, 255, 0.2);
-        transform: scale(1.05);
+        transform: scale(1.05) rotateX(10deg) rotateY(10deg);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+      .cell.x, .cell.o {
+        animation: placeMark 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .cell.x {
         color: #ff6b6b;
+        text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
       }
       .cell.o {
         color: #4ecdc4;
+        text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
       }
       .cell.winner {
         background: rgba(255, 255, 0, 0.3);
         border-color: yellow;
-        animation: pulse 1s infinite;
+        animation: winner 1.5s ease infinite;
       }
       .cell.disabled {
         cursor: not-allowed;
         opacity: 0.6;
+        transform: scale(1);
       }
       .cell.disabled:hover {
         background: rgba(255, 255, 255, 0.1);
         transform: none;
+        box-shadow: none;
       }
       #status {
         font-size: 1.2em;
         margin: 20px 0;
         font-weight: bold;
+        min-height: 1.5em;
+        text-align: center;
+        transition: all 0.3s ease;
       }
       #reset {
         font-size: 1em;
-        padding: 10px 20px;
+        padding: 12px 24px;
         cursor: pointer;
-        background: #ff6b6b;
+        background: linear-gradient(45deg, #ff6b6b, #ff8787);
         color: white;
         border: none;
-        border-radius: 5px;
+        border-radius: 25px;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        position: relative;
+        overflow: hidden;
       }
       #reset:hover {
-        background: #ff8787;
         transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
       }
-      @keyframes pop {
+      #reset:active {
+        transform: translateY(1px);
+      }
+      #reset::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(45deg);
+        transition: all 0.3s ease;
+        opacity: 0;
+      }
+      #reset:hover::after {
+        opacity: 1;
+        transform: rotate(45deg) translate(50%, 50%);
+      }
+      @keyframes titleGlow {
         0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.2);
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
         100% {
-          transform: scale(1);
+          text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.5);
         }
       }
-      @keyframes pulse {
+      @keyframes placeMark {
+        0% {
+          transform: scale(0) rotate(-180deg);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.2) rotate(0deg);
+        }
+        100% {
+          transform: scale(1) rotate(0deg);
+          opacity: 1;
+        }
+      }
+      @keyframes winner {
         0% {
           transform: scale(1);
+          box-shadow: 0 0 20px rgba(255, 255, 0, 0.3);
         }
         50% {
           transform: scale(1.05);
+          box-shadow: 0 0 30px rgba(255, 255, 0, 0.5);
         }
         100% {
           transform: scale(1);
+          box-shadow: 0 0 20px rgba(255, 255, 0, 0.3);
         }
       }
     </style>

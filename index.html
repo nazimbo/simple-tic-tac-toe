@@ -6,6 +6,67 @@
     <title>Tic Tac Toe vs AI</title>
     <link type="image/png" sizes="96x96" rel="icon" href="https://img.icons8.com/external-prettycons-flat-prettycons/94/external-tic-tac-toe-games-prettycons-flat-prettycons.png" />
     <style>
+      .particles-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1000;
+      }
+      
+      .particle {
+        position: absolute;
+        background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1000;
+      }
+
+      .thinking-dots {
+        display: inline-block;
+        position: relative;
+        width: 40px;
+        margin-left: 8px;
+      }
+
+      .thinking-dots span {
+        position: absolute;
+        top: -5px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4ecdc4;
+        animation: thinking 1.4s infinite ease-in-out both;
+      }
+
+      .thinking-dots span:nth-child(1) {
+        left: 0px;
+        animation-delay: -0.32s;
+      }
+
+      .thinking-dots span:nth-child(2) {
+        left: 16px;
+        animation-delay: -0.16s;
+      }
+
+      .thinking-dots span:nth-child(3) {
+        left: 32px;
+        animation-delay: 0s;
+      }
+
+      @keyframes thinking {
+        0%, 80%, 100% { 
+          transform: scale(0);
+          opacity: 0;
+        }
+        40% { 
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
       body {
         font-family: "Arial", sans-serif;
         display: flex;
@@ -192,6 +253,105 @@
     </div>
 
     <script>
+      // Create particles container
+      const particlesContainer = document.createElement('div');
+      particlesContainer.className = 'particles-container';
+      document.body.appendChild(particlesContainer);
+
+      // Particle system
+      class ParticleSystem {
+        constructor(container) {
+          this.container = container;
+          this.particles = [];
+        }
+
+        createParticle(x, y, color) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.left = `${x}px`;
+          particle.style.top = `${y}px`;
+          particle.style.background = color;
+          
+          // Random size between 4 and 12 pixels
+          const size = Math.random() * 8 + 4;
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          
+          // Random velocity
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 200 + 100;
+          const vx = Math.cos(angle) * speed;
+          const vy = Math.sin(angle) * speed;
+          
+          this.container.appendChild(particle);
+          
+          return {
+            element: particle,
+            x,
+            y,
+            vx,
+            vy,
+            life: 1
+          };
+        }
+
+        emit(x, y, color, count = 30) {
+          for (let i = 0; i < count; i++) {
+            this.particles.push(this.createParticle(x, y, color));
+          }
+        }
+
+        update(deltaTime) {
+          for (let i = this.particles.length - 1; i >= 0; i--) {
+            const particle = this.particles[i];
+            
+            // Update position
+            particle.x += particle.vx * deltaTime;
+            particle.y += particle.vy * deltaTime;
+            
+            // Update element position
+            particle.element.style.left = `${particle.x}px`;
+            particle.element.style.top = `${particle.y}px`;
+            
+            // Update life and opacity
+            particle.life -= deltaTime * 2;
+            particle.element.style.opacity = particle.life;
+            
+            // Remove dead particles
+            if (particle.life <= 0) {
+              particle.element.remove();
+              this.particles.splice(i, 1);
+            }
+          }
+        }
+
+        clear() {
+          this.particles.forEach(particle => particle.element.remove());
+          this.particles = [];
+        }
+      }
+
+      const particleSystem = new ParticleSystem(particlesContainer);
+
+      // Animation loop for particles
+      let lastTime = performance.now();
+      function updateParticles(currentTime) {
+        const deltaTime = (currentTime - lastTime) / 1000;
+        lastTime = currentTime;
+        
+        particleSystem.update(deltaTime);
+        requestAnimationFrame(updateParticles);
+      }
+      requestAnimationFrame(updateParticles);
+
+      // Create thinking dots element
+      const createThinkingDots = () => {
+        const dots = document.createElement('div');
+        dots.className = 'thinking-dots';
+        dots.innerHTML = '<span></span><span></span><span></span>';
+        return dots;
+      };
+
       // Game state and constants
       const statusDisplay = document.getElementById("status");
       const cells = document.querySelectorAll(".cell");
@@ -236,9 +396,15 @@
       };
 
       // Enhanced status updates with animations
-      const updateStatus = async (message) => {
+      const updateStatus = async (message, thinking = false) => {
         await fadeOut(statusDisplay);
-        statusDisplay.textContent = message;
+        if (thinking) {
+          statusDisplay.textContent = message;
+          const dots = createThinkingDots();
+          statusDisplay.appendChild(dots);
+        } else {
+          statusDisplay.textContent = message;
+        }
         await fadeIn(statusDisplay);
       };
 
@@ -270,9 +436,9 @@
 
         // Switch to AI's turn with smooth transition
         currentPlayer = "O";
-        await updateStatus("AI is thinking...");
+        await updateStatus("AI is thinking", true);
         disableCells();
-        setTimeout(makeAIMove, 500);
+        setTimeout(makeAIMove, 1200);
       };
 
       // AI move with enhanced animations
@@ -380,10 +546,23 @@
         disableCells();
       };
 
-      // Enhanced winning cells highlight with sequential animation
+      // Enhanced winning cells highlight with sequential animation and particles
       const highlightWinningCells = async (winningCells) => {
         for (const index of winningCells) {
-          cells[index].classList.add("winner");
+          const cell = cells[index];
+          cell.classList.add("winner");
+          
+          // Get cell position for particles
+          const rect = cell.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          // Emit particles with color based on winner
+          const color = cell.classList.contains('x') ? 
+            'radial-gradient(circle, rgba(255,107,107,0.8) 0%, rgba(255,107,107,0) 70%)' : 
+            'radial-gradient(circle, rgba(78,205,196,0.8) 0%, rgba(78,205,196,0) 70%)';
+          
+          particleSystem.emit(centerX, centerY, color, 20);
           await new Promise(resolve => setTimeout(resolve, 200));
         }
       };

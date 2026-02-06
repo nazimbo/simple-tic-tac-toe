@@ -1,0 +1,11 @@
+{
+  "name": "simple-tic-tac-toe",
+  "version": "1.0.0",
+  "description": "Tic Tac Toe with AI, local, and online multiplayer",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.0.0"
+  }
+}

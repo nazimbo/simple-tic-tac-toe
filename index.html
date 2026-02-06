@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tic Tac Toe vs AI</title>
+    <title>Tic Tac Toe</title>
     <link type="image/png" sizes="96x96" rel="icon" href="https://img.icons8.com/external-prettycons-flat-prettycons/94/external-tic-tac-toe-games-prettycons-flat-prettycons.png" />
     <style>
       .particles-container {
@@ -15,7 +15,7 @@
         pointer-events: none;
         z-index: 1000;
       }
-      
+
       .particle {
         position: absolute;
         background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
@@ -57,11 +57,11 @@
       }
 
       @keyframes thinking {
-        0%, 80%, 100% { 
+        0%, 80%, 100% {
           transform: scale(0);
           opacity: 0;
         }
-        40% { 
+        40% {
           transform: scale(1);
           opacity: 1;
         }
@@ -86,6 +86,7 @@
         border: 1px solid rgba(255, 255, 255, 0.18);
         transform: translateY(0);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
       }
       .game-container:hover {
         transform: translateY(-5px);
@@ -161,27 +162,25 @@
         text-align: center;
         transition: all 0.3s ease;
       }
-      #reset {
+
+      .btn {
         font-size: 1em;
         padding: 12px 24px;
         cursor: pointer;
-        background: linear-gradient(45deg, #ff6b6b, #ff8787);
         color: white;
         border: none;
         border-radius: 25px;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
         position: relative;
         overflow: hidden;
       }
-      #reset:hover {
+      .btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
       }
-      #reset:active {
+      .btn:active {
         transform: translateY(1px);
       }
-      #reset::after {
+      .btn::after {
         content: '';
         position: absolute;
         top: -50%;
@@ -193,10 +192,116 @@
         transition: all 0.3s ease;
         opacity: 0;
       }
-      #reset:hover::after {
+      .btn:hover::after {
         opacity: 1;
         transform: rotate(45deg) translate(50%, 50%);
       }
+
+      .btn-red {
+        background: linear-gradient(45deg, #ff6b6b, #ff8787);
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+      }
+      .btn-red:hover {
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+      }
+      .btn-blue {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      }
+      .btn-blue:hover {
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+      .btn-green {
+        background: linear-gradient(45deg, #4ecdc4, #44b09e);
+        box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+      }
+      .btn-green:hover {
+        box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+      }
+
+      #mode-select {
+        margin: 20px 0;
+      }
+      #mode-select h2 {
+        margin-bottom: 20px;
+        font-size: 1.3em;
+        opacity: 0.9;
+      }
+      .mode-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+      }
+      .mode-buttons .btn {
+        width: 220px;
+      }
+
+      #online-lobby {
+        margin: 20px 0;
+      }
+      #online-lobby h2 {
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        opacity: 0.9;
+      }
+      .lobby-section {
+        margin: 15px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .lobby-divider {
+        opacity: 0.5;
+        font-size: 0.9em;
+        margin: 5px 0;
+      }
+      #room-code-input {
+        padding: 10px 16px;
+        border-radius: 25px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 1em;
+        text-align: center;
+        width: 140px;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        outline: none;
+        transition: border-color 0.3s ease;
+      }
+      #room-code-input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+        letter-spacing: 1px;
+      }
+      #room-code-input:focus {
+        border-color: rgba(255, 255, 255, 0.8);
+      }
+      #room-code-display {
+        font-size: 2em;
+        letter-spacing: 8px;
+        font-weight: bold;
+        margin: 10px 0;
+        color: #4ecdc4;
+        text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+      }
+      .lobby-status {
+        opacity: 0.8;
+        font-size: 0.95em;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
       @keyframes titleGlow {
         0% {
           text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -236,20 +341,56 @@
   </head>
   <body>
     <div class="game-container">
-      <h1>Tic Tac Toe vs AI</h1>
-      <div id="status">Your turn (X)</div>
-      <div class="board" id="board">
-        <div class="cell" data-cell-index="0"></div>
-        <div class="cell" data-cell-index="1"></div>
-        <div class="cell" data-cell-index="2"></div>
-        <div class="cell" data-cell-index="3"></div>
-        <div class="cell" data-cell-index="4"></div>
-        <div class="cell" data-cell-index="5"></div>
-        <div class="cell" data-cell-index="6"></div>
-        <div class="cell" data-cell-index="7"></div>
-        <div class="cell" data-cell-index="8"></div>
+      <h1>Tic Tac Toe</h1>
+
+      <!-- Mode Selection -->
+      <div id="mode-select">
+        <h2>Choose Game Mode</h2>
+        <div class="mode-buttons">
+          <button class="btn btn-red" onclick="startGame('ai')">vs AI</button>
+          <button class="btn btn-blue" onclick="startGame('local')">vs Player (Local)</button>
+          <button class="btn btn-green" onclick="showOnlineLobby()">vs Player (Online)</button>
+        </div>
       </div>
-      <button id="reset">Reset Game</button>
+
+      <!-- Online Lobby -->
+      <div id="online-lobby" class="hidden">
+        <h2>Online Multiplayer</h2>
+        <div class="lobby-section">
+          <button class="btn btn-green" id="create-room-btn" onclick="createRoom()">Create Room</button>
+          <div id="room-created" class="hidden">
+            <div id="room-code-display"></div>
+            <div class="lobby-status">Waiting for opponent<span class="thinking-dots"><span></span><span></span><span></span></span></div>
+          </div>
+        </div>
+        <div class="lobby-divider">- or -</div>
+        <div class="lobby-section">
+          <input type="text" id="room-code-input" placeholder="CODE" maxlength="4" />
+          <button class="btn btn-blue" onclick="joinRoom()">Join Room</button>
+        </div>
+        <div id="lobby-error" style="color: #ff6b6b; margin-top: 10px; min-height: 1.2em;"></div>
+        <button class="btn btn-red" style="margin-top: 10px;" onclick="leaveLobby()">Back</button>
+      </div>
+
+      <!-- Game Area -->
+      <div id="game-area" class="hidden">
+        <div id="status">Your turn (X)</div>
+        <div class="board" id="board">
+          <div class="cell" data-cell-index="0"></div>
+          <div class="cell" data-cell-index="1"></div>
+          <div class="cell" data-cell-index="2"></div>
+          <div class="cell" data-cell-index="3"></div>
+          <div class="cell" data-cell-index="4"></div>
+          <div class="cell" data-cell-index="5"></div>
+          <div class="cell" data-cell-index="6"></div>
+          <div class="cell" data-cell-index="7"></div>
+          <div class="cell" data-cell-index="8"></div>
+        </div>
+        <div class="button-row">
+          <button class="btn btn-red" id="reset">Reset Game</button>
+          <button class="btn btn-blue" id="menu-btn" onclick="showModeSelect()">Menu</button>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -271,20 +412,20 @@
           particle.style.left = `${x}px`;
           particle.style.top = `${y}px`;
           particle.style.background = color;
-          
+
           // Random size between 4 and 12 pixels
           const size = Math.random() * 8 + 4;
           particle.style.width = `${size}px`;
           particle.style.height = `${size}px`;
-          
+
           // Random velocity
           const angle = Math.random() * Math.PI * 2;
           const speed = Math.random() * 200 + 100;
           const vx = Math.cos(angle) * speed;
           const vy = Math.sin(angle) * speed;
-          
+
           this.container.appendChild(particle);
-          
+
           return {
             element: particle,
             x,
@@ -304,19 +445,19 @@
         update(deltaTime) {
           for (let i = this.particles.length - 1; i >= 0; i--) {
             const particle = this.particles[i];
-            
+
             // Update position
             particle.x += particle.vx * deltaTime;
             particle.y += particle.vy * deltaTime;
-            
+
             // Update element position
             particle.element.style.left = `${particle.x}px`;
             particle.element.style.top = `${particle.y}px`;
-            
+
             // Update life and opacity
             particle.life -= deltaTime * 2;
             particle.element.style.opacity = particle.life;
-            
+
             // Remove dead particles
             if (particle.life <= 0) {
               particle.element.remove();
@@ -338,7 +479,7 @@
       function updateParticles(currentTime) {
         const deltaTime = (currentTime - lastTime) / 1000;
         lastTime = currentTime;
-        
+
         particleSystem.update(deltaTime);
         requestAnimationFrame(updateParticles);
       }
@@ -352,15 +493,26 @@
         return dots;
       };
 
-      // Game state and constants
+      // DOM elements
       const statusDisplay = document.getElementById("status");
       const cells = document.querySelectorAll(".cell");
       const resetButton = document.getElementById("reset");
       const board = document.getElementById("board");
+      const modeSelect = document.getElementById("mode-select");
+      const onlineLobby = document.getElementById("online-lobby");
+      const gameArea = document.getElementById("game-area");
+      const lobbyError = document.getElementById("lobby-error");
 
+      // Game state
       let gameState = ["", "", "", "", "", "", "", "", ""];
       let gameActive = true;
       let currentPlayer = "X";
+      let gameMode = null; // "ai" | "local" | "online"
+
+      // Online state
+      let ws = null;
+      let playerSymbol = null;
+      let roomCode = null;
 
       // Winning combinations
       const winningConditions = [
@@ -374,7 +526,187 @@
         [2, 4, 6], // Diagonals
       ];
 
-      // Animation utilities
+      // --- Mode Selection ---
+
+      function showModeSelect() {
+        if (ws) {
+          ws.close();
+          ws = null;
+        }
+        playerSymbol = null;
+        roomCode = null;
+        gameMode = null;
+        modeSelect.classList.remove("hidden");
+        onlineLobby.classList.add("hidden");
+        gameArea.classList.add("hidden");
+      }
+
+      function startGame(mode) {
+        gameMode = mode;
+        modeSelect.classList.add("hidden");
+        onlineLobby.classList.add("hidden");
+        gameArea.classList.remove("hidden");
+        resetGameState();
+        if (mode === "ai") {
+          updateStatus("Your turn (X)");
+        } else if (mode === "local") {
+          updateStatus("Player X's turn");
+        }
+      }
+
+      // --- Online Lobby ---
+
+      function showOnlineLobby() {
+        modeSelect.classList.add("hidden");
+        onlineLobby.classList.remove("hidden");
+        lobbyError.textContent = "";
+        document.getElementById("room-created").classList.add("hidden");
+        document.getElementById("create-room-btn").classList.remove("hidden");
+        document.getElementById("room-code-input").value = "";
+      }
+
+      function leaveLobby() {
+        if (ws) {
+          ws.close();
+          ws = null;
+        }
+        onlineLobby.classList.add("hidden");
+        modeSelect.classList.remove("hidden");
+      }
+
+      function connectToServer() {
+        return new Promise((resolve, reject) => {
+          try {
+            const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+            const wsUrl = location.hostname === "localhost" || location.hostname === "127.0.0.1"
+              ? "ws://localhost:3000"
+              : `${protocol}//${location.host}`;
+            const socket = new WebSocket(wsUrl);
+            socket.onopen = () => resolve(socket);
+            socket.onerror = () => {
+              reject(new Error("Cannot connect to server"));
+            };
+            socket.onclose = () => {
+              if (gameMode === "online" && gameActive) {
+                handleDisconnect();
+              }
+            };
+            socket.onmessage = (event) => {
+              handleServerMessage(JSON.parse(event.data));
+            };
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+
+      async function createRoom() {
+        lobbyError.textContent = "";
+        try {
+          ws = await connectToServer();
+          ws.send(JSON.stringify({ type: "create" }));
+        } catch {
+          lobbyError.textContent = "Could not connect to server. Make sure it's running (npm start).";
+        }
+      }
+
+      async function joinRoom() {
+        lobbyError.textContent = "";
+        const code = document.getElementById("room-code-input").value.trim().toUpperCase();
+        if (code.length !== 4) {
+          lobbyError.textContent = "Enter a 4-character room code.";
+          return;
+        }
+        try {
+          ws = await connectToServer();
+          ws.send(JSON.stringify({ type: "join", code }));
+        } catch {
+          lobbyError.textContent = "Could not connect to server. Make sure it's running (npm start).";
+        }
+      }
+
+      function handleServerMessage(msg) {
+        if (msg.type === "created") {
+          roomCode = msg.code;
+          document.getElementById("room-code-display").textContent = msg.code;
+          document.getElementById("room-created").classList.remove("hidden");
+          document.getElementById("create-room-btn").classList.add("hidden");
+        }
+
+        else if (msg.type === "joined") {
+          roomCode = msg.code;
+          playerSymbol = msg.symbol;
+        }
+
+        else if (msg.type === "start") {
+          playerSymbol = msg.symbol;
+          gameMode = "online";
+          onlineLobby.classList.add("hidden");
+          gameArea.classList.remove("hidden");
+          resetGameState();
+          if (playerSymbol === "X") {
+            updateStatus("Your turn (X)");
+            enableCells();
+          } else {
+            updateStatus("Opponent's turn", true);
+            disableCells();
+          }
+        }
+
+        else if (msg.type === "moved") {
+          const cell = cells[msg.index];
+          gameState[msg.index] = msg.symbol;
+          cell.textContent = msg.symbol;
+          cell.classList.add(msg.symbol.toLowerCase());
+
+          if (msg.winner) {
+            endGame(msg.winner);
+          } else if (msg.draw) {
+            endGame("draw");
+          } else {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            if (currentPlayer === playerSymbol) {
+              updateStatus("Your turn (" + playerSymbol + ")");
+              enableCells();
+            } else {
+              updateStatus("Opponent's turn", true);
+              disableCells();
+            }
+          }
+        }
+
+        else if (msg.type === "opponent_left") {
+          gameActive = false;
+          updateStatus("Opponent disconnected!");
+          disableCells();
+        }
+
+        else if (msg.type === "reset") {
+          resetGameState();
+          if (playerSymbol === "X") {
+            updateStatus("Your turn (X)");
+            enableCells();
+          } else {
+            updateStatus("Opponent's turn", true);
+            disableCells();
+          }
+        }
+
+        else if (msg.type === "error") {
+          lobbyError.textContent = msg.message;
+        }
+      }
+
+      function handleDisconnect() {
+        if (gameActive) {
+          gameActive = false;
+          updateStatus("Disconnected from server!");
+          disableCells();
+        }
+      }
+
+      // --- Animation utilities ---
+
       const shake = (element) => {
         element.style.animation = "none";
         element.offsetHeight; // Trigger reflow
@@ -408,47 +740,66 @@
         await fadeIn(statusDisplay);
       };
 
-      // Handle cell click event with enhanced animations
+      // --- Cell click handler ---
+
       const handleCellClick = async (clickedCellEvent) => {
         const clickedCell = clickedCellEvent.target;
         const clickedCellIndex = parseInt(clickedCell.getAttribute("data-cell-index"));
 
-        // Check if the cell is already filled or game is not active
-        if (gameState[clickedCellIndex] !== "" || !gameActive || currentPlayer !== "X") {
+        if (gameState[clickedCellIndex] !== "" || !gameActive) {
           shake(clickedCell);
           return;
         }
 
-        // Update game state and UI with animation
-        gameState[clickedCellIndex] = "X";
-        clickedCell.textContent = "X";
-        clickedCell.classList.add("x");
+        if (gameMode === "ai") {
+          if (currentPlayer !== "X") {
+            shake(clickedCell);
+            return;
+          }
+          gameState[clickedCellIndex] = "X";
+          clickedCell.textContent = "X";
+          clickedCell.classList.add("x");
 
-        // Check for win or draw
-        if (checkWin("X")) {
-          endGame("X");
-          return;
-        }
-        if (checkDraw()) {
-          endGame("draw");
-          return;
+          if (checkWin("X")) { endGame("X"); return; }
+          if (checkDraw()) { endGame("draw"); return; }
+
+          currentPlayer = "O";
+          await updateStatus("AI is thinking", true);
+          disableCells();
+          setTimeout(makeAIMove, 200);
         }
 
-        // Switch to AI's turn with smooth transition
-        currentPlayer = "O";
-        await updateStatus("AI is thinking", true);
-        disableCells();
-        setTimeout(makeAIMove, 200);
+        else if (gameMode === "local") {
+          gameState[clickedCellIndex] = currentPlayer;
+          clickedCell.textContent = currentPlayer;
+          clickedCell.classList.add(currentPlayer.toLowerCase());
+
+          if (checkWin(currentPlayer)) { endGame(currentPlayer); return; }
+          if (checkDraw()) { endGame("draw"); return; }
+
+          currentPlayer = currentPlayer === "X" ? "O" : "X";
+          updateStatus("Player " + currentPlayer + "'s turn");
+        }
+
+        else if (gameMode === "online") {
+          if (currentPlayer !== playerSymbol) {
+            shake(clickedCell);
+            return;
+          }
+          // Send move to server; the server echoes it back via "moved"
+          ws.send(JSON.stringify({ type: "move", index: clickedCellIndex }));
+          disableCells();
+        }
       };
 
-      // AI move with enhanced animations
+      // --- AI ---
+
       const makeAIMove = async () => {
         if (!gameActive) return;
 
         let bestScore = -Infinity;
         let bestMove;
 
-        // Find the best move using minimax
         for (let i = 0; i < 9; i++) {
           if (gameState[i] === "") {
             gameState[i] = "O";
@@ -461,35 +812,24 @@
           }
         }
 
-        // Animate AI's move
         const targetCell = cells[bestMove];
         gameState[bestMove] = "O";
-        
-        // Add a "thinking" indicator
+
         targetCell.style.background = "rgba(78, 205, 196, 0.2)";
         await new Promise(resolve => setTimeout(resolve, 300));
-        
+
         targetCell.textContent = "O";
         targetCell.classList.add("o");
         targetCell.style.background = "";
 
-        // Check for win or draw with animations
-        if (checkWin("O")) {
-          endGame("O");
-          return;
-        }
-        if (checkDraw()) {
-          endGame("draw");
-          return;
-        }
+        if (checkWin("O")) { endGame("O"); return; }
+        if (checkDraw()) { endGame("draw"); return; }
 
-        // Switch back to player's turn with smooth transition
         currentPlayer = "X";
         await updateStatus("Your turn (X)");
         enableCells();
       };
 
-      // Minimax algorithm for AI
       const minimax = (board, depth, isMaximizing) => {
         if (checkWin("O")) return 1;
         if (checkWin("X")) return -1;
@@ -520,54 +860,62 @@
         }
       };
 
-      // Enhanced win checking with sequential animation
+      // --- Win/Draw checks ---
+
       const checkWin = (player) => {
         return winningConditions.some((condition) => {
           return condition.every((index) => gameState[index] === player);
         });
       };
 
-      // Check for a draw with animation
       const checkDraw = () => !gameState.includes("");
 
-      // Enhanced game end with animations
+      // --- End game ---
+
       const endGame = async (result) => {
         gameActive = false;
         if (result === "draw") {
           await updateStatus("It's a draw!");
           shake(board);
         } else {
-          const winningCells = winningConditions.find((condition) => 
+          const winningCells = winningConditions.find((condition) =>
             condition.every((index) => gameState[index] === result)
           );
           await highlightWinningCells(winningCells);
-          await updateStatus(result === "X" ? "You win!" : "AI wins!");
+
+          if (gameMode === "ai") {
+            await updateStatus(result === "X" ? "You win!" : "AI wins!");
+          } else if (gameMode === "local") {
+            await updateStatus("Player " + result + " wins!");
+          } else if (gameMode === "online") {
+            await updateStatus(result === playerSymbol ? "You win!" : "You lose!");
+          }
         }
         disableCells();
       };
 
-      // Enhanced winning cells highlight with sequential animation and particles
+      // --- Winning cell highlight ---
+
       const highlightWinningCells = async (winningCells) => {
         for (const index of winningCells) {
           const cell = cells[index];
           cell.classList.add("winner");
-          
-          // Get cell position for particles
+
           const rect = cell.getBoundingClientRect();
           const centerX = rect.left + rect.width / 2;
           const centerY = rect.top + rect.height / 2;
-          
-          // Emit particles with color based on winner
-          const color = cell.classList.contains('x') ? 
-            'radial-gradient(circle, rgba(255,107,107,0.8) 0%, rgba(255,107,107,0) 70%)' : 
+
+          const color = cell.classList.contains('x') ?
+            'radial-gradient(circle, rgba(255,107,107,0.8) 0%, rgba(255,107,107,0) 70%)' :
             'radial-gradient(circle, rgba(78,205,196,0.8) 0%, rgba(78,205,196,0) 70%)';
-          
+
           particleSystem.emit(centerX, centerY, color, 20);
           await new Promise(resolve => setTimeout(resolve, 200));
         }
       };
 
-      // Enhanced cell disable with fade effect
+      // --- Cell enable/disable ---
+
       const disableCells = () => {
         cells.forEach((cell) => {
           if (!cell.classList.contains("winner")) {
@@ -577,7 +925,6 @@
         });
       };
 
-      // Enhanced cell enable with fade effect
       const enableCells = () => {
         cells.forEach((cell) => {
           if (cell.textContent === "") {
@@ -587,17 +934,12 @@
         });
       };
 
-      // Enhanced game reset with animations
-      const resetGame = async () => {
-        // Fade out the board
-        await fadeOut(board);
-        
-        // Reset game state
+      // --- Reset ---
+
+      function resetGameState() {
         gameState = ["", "", "", "", "", "", "", "", ""];
         gameActive = true;
         currentPlayer = "X";
-        
-        // Clear cells with animation
         cells.forEach((cell) => {
           cell.textContent = "";
           cell.classList.remove("x", "o", "winner", "disabled");
@@ -605,10 +947,26 @@
           cell.style.animation = "";
           cell.style.background = "";
         });
+      }
 
-        // Fade the board back in
+      const resetGame = async () => {
+        await fadeOut(board);
+
+        if (gameMode === "online" && ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: "reset" }));
+          // Server will echo reset to both players
+          await fadeIn(board);
+          return;
+        }
+
+        resetGameState();
         await fadeIn(board);
-        updateStatus("Your turn (X)");
+
+        if (gameMode === "ai") {
+          updateStatus("Your turn (X)");
+        } else if (gameMode === "local") {
+          updateStatus("Player X's turn");
+        }
       };
 
       // Add shake animation to CSS
